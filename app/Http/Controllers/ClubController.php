@@ -45,7 +45,7 @@ class ClubController extends Controller {
      */
     public function show(Club $club): JsonResponse {
         $club->load([
-            'student',
+            'students',
             'events'
         ]);
 

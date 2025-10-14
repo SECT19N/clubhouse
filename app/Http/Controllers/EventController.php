@@ -13,7 +13,11 @@ class EventController extends Controller {
      * Display a listing of the resource.
      */
     public function index(): JsonResponse {
-        return response()->json(Student::paginate(15));
+        return response()->json(
+            Event::with('club:id,name')
+                 ->orderBy('start_time')
+                 ->paginate(10)
+        );
     }
 
     /**
@@ -29,25 +33,25 @@ class EventController extends Controller {
      */
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:60',
-            'last_name' => 'required|string|max:60',
-            'email' => 'required|email|unique:students',
-            'gender' => 'nullable|in:M,F',
-            'date_of_birth' => 'required|date|before:-15 years',
-            'graduation_year' => 'required|integer|digits:4',
-            'gpa' => 'nullable|numeric|between:0,4',
+            'club_id' => 'required|exists:clubs,id',
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string|max:2000',
+            'start_time' => 'required|date|after:now',
+            'end_time' => 'nullable|date|after:start_time',
+            'venue' => 'nullable|string|max:100',
+            'expected_audience' => 'integer|min:5|max:1000',
         ]);
 
-        $student = Student::create($validated);
-        return response()->json($student, 201);
+        $event = Event::create($validated);
+        return response()->json($event, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Student $student): JsonResponse {
-        $student->load('clubs');
-        return response()->json($student);
+    public function show(Event $event): JsonResponse {
+        $event->load('club');
+        return response()->json($event);
     }
 
     /**
@@ -61,26 +65,25 @@ class EventController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Student $student): JsonResponse {
+    public function update(Request $request, Event $event): JsonResponse {
         $validated = $request->validate([
-            'first_name' => 'sometimes|string|max:60',
-            'last_name' => 'sometimes|string|max:60',
-            'email' => 'sometimes|email|unique:students,email,' . $student->id,
-            'gender' => 'nullable|in:M,F',
-            'date_of_birth' => 'sometimes|date|before:-15 years',
-            'graduation_year' => 'sometimes|integer|digits:4',
-            'gpa' => 'nullable|numeric|between:0,4',
+            'club_id' => 'sometimes|exists:clubs,id',
+            'title' => 'sometimes|string|max:200',
+            'description' => 'nullable|string|max:2000',
+            'start_time' => 'sometimes|date|after:now',
+            'end_time' => 'nullable|date|after:start_time',
+            'venue' => 'nullable|string|max:100',
+            'expected_audience' => 'integer|min:5|max:1000',
         ]);
-
-        $student->update($validated);
-        return response()->json($student);
+        $event->update($validated);
+        return response()->json($event);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Student $student): JsonResponse {
-        $student->delete();
+    public function destroy(Event $event): JsonResponse {
+        $event->delete();
         return response()->json(null, 204);
     }
 }
