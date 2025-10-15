@@ -9,6 +9,7 @@ class DatabaseSeeder extends Seeder {
             ClubSeeder::class,
             StudentSeeder::class,
             EventSeeder::class,
+            ClubStudentSeeder::class,
         ]);
     }
 }
