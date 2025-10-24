@@ -12,7 +12,7 @@ class StudentController extends Controller {
      * Display a listing of the resource.
      */
     public function index(): JsonResponse {
-        return response()->json(Student::paginate(15));
+        return response()->json(Student::paginate(10));
     }
 
     /**
@@ -20,7 +20,7 @@ class StudentController extends Controller {
      */
     public function create()
     {
-        //
+        // used for HTML Forms
     }
 
     /**

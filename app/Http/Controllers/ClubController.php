@@ -22,11 +22,11 @@ class ClubController extends Controller {
      */
     public function create()
     {
-        //
+        // used for HTML Forms
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage. returns 201 on success
      */
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
@@ -41,7 +41,7 @@ class ClubController extends Controller {
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource. route: Api/club/{id}
      */
     public function show(Club $club): JsonResponse {
         $club->load([
@@ -57,7 +57,7 @@ class ClubController extends Controller {
      */
     public function edit(Club $club)
     {
-        //
+        // used for HTML Forms, provides a pre-filled form to edit.
     }
 
     /**
