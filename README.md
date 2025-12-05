@@ -1,33 +1,125 @@
-# 1. create project
-composer create-project laravel/laravel clubhub "12.*"
+# Club Management System API
 
-# 2. DB + .env
-#   (edit .env)
+A comprehensive RESTful API for managing student clubs, students, and events built with Laravel 12 and Laravel Sanctum.
 
-# 3. generate model + migration + controller
-php artisan make:model Club -m -c -r
-php artisan make:model Student -m -c -r
-php artisan make:model Event -m -c -r
+## Features
 
-# 4. pivot
-php artisan make:migration create_club_student_table
+- ✅ **Authentication & Authorization** - Laravel Sanctum with role-based access control
+- ✅ **Full CRUD Operations** - Clubs, Students, Events
+- ✅ **Relationship Management** - Club-Student memberships with roles
+- ✅ **Search & Filtering** - Advanced querying on all resources
+- ✅ **Soft Deletes** - Safe deletion with restore capability
+- ✅ **Comprehensive Testing** - Feature tests for all endpoints
+- ✅ **Database Backup** - Automated backup command
+- ✅ **API Documentation** - Complete documentation (see API_DOCUMENTATION.md)
 
-# 5. run migrations
+## Quick Start
+
+### 1. Install Dependencies
+```bash
+composer install
+npm install
+```
+
+### 2. Environment Setup
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 3. Database Configuration
+
+**For SQLite (default):**
+```bash
+touch database/database.sqlite
+```
+
+**For MySQL:**
+Update `.env`:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=clubhouse
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
+
+### 4. Run Migrations & Seeders
+```bash
 php artisan migrate
-
-# 6. factories
-php artisan make:factory ClubFactory
-php artisan make:factory StudentFactory
-php artisan make:factory EventFactory
-
-# 7. seeders
-php artisan make:seeder ClubSeeder
-php artisan make:seeder StudentSeeder
-php artisan make:seeder EventSeeder
-
-# 8. seed
 php artisan db:seed
+```
 
-# 9. test
+### 5. Start Development Server
+```bash
 php artisan serve
-curl http://localhost:8000/api/clubs | jq
+```
+
+The API will be available at `http://localhost:8000`
+
+## Testing
+
+### Run Tests
+```bash
+php artisan test
+```
+
+### Test Users
+After seeding, you can login with:
+- **Admin:** admin@clubhouse.com / password123
+- **Student:** student@clubhouse.com / password123
+- **President:** president@clubhouse.com / password123
+
+## Database Backup
+
+```bash
+# Create backup
+php artisan db:backup
+
+# Custom backup path
+php artisan db:backup --path=/path/to/backups
+```
+
+## API Documentation
+
+See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for complete API reference.
+
+## Postman Collection
+
+Import `Club_Management_API.postman_collection.json` into Postman for easy testing.
+
+## Project Structure
+
+```
+clubhouse/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/     # API controllers
+│   │   ├── Middleware/      # Role-based middleware
+│   │   └── Requests/        # Form request validation
+│   ├── Models/              # Eloquent models
+│   └── Console/
+│       └── Commands/        # Backup command
+├── database/
+│   ├── migrations/          # Database schema
+│   ├── seeders/             # Database seeders
+│   └── factories/           # Model factories
+├── routes/
+│   └── api.php              # API routes
+├── tests/
+│   └── Feature/             # Feature tests
+└── storage/
+    └── backups/              # Database backups
+```
+
+## Technologies
+
+- **Laravel 12** - PHP Framework
+- **Laravel Sanctum** - API Authentication
+- **SQLite/MySQL** - Database
+- **PHPUnit** - Testing Framework
+
+## License
+
+MIT License
