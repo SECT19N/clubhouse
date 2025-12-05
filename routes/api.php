@@ -17,6 +17,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
+    // Club-Student relationship routes
+    Route::prefix('clubs/{club}')->group(function () {
+        Route::get('students', [ClubController::class, 'getStudents']);
+        Route::post('students', [ClubController::class, 'addStudent']);
+        Route::delete('students/{student}', [ClubController::class, 'removeStudent']);
+        Route::put('students/{student}/role', [ClubController::class, 'updateStudentRole']);
+    });
+
+    // Student-Club relationship route
+    Route::get('students/{student}/clubs', [StudentController::class, 'getClubs']);
+
     // Resource routes
     Route::apiResource('clubs', ClubController::class);
     Route::apiResource('students', StudentController::class);

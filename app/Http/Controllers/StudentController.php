@@ -82,4 +82,18 @@ class StudentController extends Controller {
         $student->delete();
         return response()->json(null, 204);
     }
+
+    /**
+     * Get all clubs a student belongs to.
+     */
+    public function getClubs(Student $student): JsonResponse {
+        $clubs = $student->clubs()->withPivot('role', 'joined_at')->get();
+        
+        return response()->json([
+            'student_id' => $student->id,
+            'student_name' => $student->first_name . ' ' . $student->last_name,
+            'clubs' => $clubs,
+            'total_clubs' => $clubs->count(),
+        ]);
+    }
 }

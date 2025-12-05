@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -81,5 +82,97 @@ class ClubController extends Controller {
     public function destroy(Club $club): JsonResponse {
         $club->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Get all students in a club.
+     */
+    public function getStudents(Club $club): JsonResponse {
+        $students = $club->students()->withPivot('role', 'joined_at')->get();
+        
+        return response()->json([
+            'club_id' => $club->id,
+            'club_name' => $club->name,
+            'students' => $students,
+            'total_students' => $students->count(),
+        ]);
+    }
+
+    /**
+     * Add a student to a club.
+     */
+    public function addStudent(Request $request, Club $club): JsonResponse {
+        $validated = $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'role' => 'nullable|string|in:member,treasurer,president,secretary|max:50',
+        ]);
+
+        $student = Student::findOrFail($validated['student_id']);
+
+        // Check if student is already in the club
+        if ($club->students()->where('student_id', $student->id)->exists()) {
+            return response()->json([
+                'message' => 'Student is already a member of this club.',
+            ], 409);
+        }
+
+        // Attach student to club with role and joined_at
+        $club->students()->attach($student->id, [
+            'role' => $validated['role'] ?? 'member',
+            'joined_at' => now()->toDateString(),
+        ]);
+
+        // Reload the relationship to get pivot data
+        $student = $club->students()->where('student_id', $student->id)->first();
+
+        return response()->json([
+            'message' => 'Student added to club successfully',
+            'student' => $student,
+        ], 201);
+    }
+
+    /**
+     * Remove a student from a club.
+     */
+    public function removeStudent(Club $club, Student $student): JsonResponse {
+        if (!$club->students()->where('student_id', $student->id)->exists()) {
+            return response()->json([
+                'message' => 'Student is not a member of this club.',
+            ], 404);
+        }
+
+        $club->students()->detach($student->id);
+
+        return response()->json([
+            'message' => 'Student removed from club successfully',
+        ], 200);
+    }
+
+    /**
+     * Update a student's role in a club.
+     */
+    public function updateStudentRole(Request $request, Club $club, Student $student): JsonResponse {
+        $validated = $request->validate([
+            'role' => 'required|string|in:member,treasurer,president,secretary|max:50',
+        ]);
+
+        if (!$club->students()->where('student_id', $student->id)->exists()) {
+            return response()->json([
+                'message' => 'Student is not a member of this club.',
+            ], 404);
+        }
+
+        // Update the pivot table
+        $club->students()->updateExistingPivot($student->id, [
+            'role' => $validated['role'],
+        ]);
+
+        // Reload the relationship to get updated pivot data
+        $student = $club->students()->where('student_id', $student->id)->first();
+
+        return response()->json([
+            'message' => 'Student role updated successfully',
+            'student' => $student,
+        ]);
     }
 }
