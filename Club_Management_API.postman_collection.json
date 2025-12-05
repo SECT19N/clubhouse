@@ -1,0 +1,696 @@
+{
+	"info": {
+		"_postman_id": "clubhouse-api-collection",
+		"name": "Club Management System API",
+		"description": "Complete API collection for managing Clubs, Students, and Events with Authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('auth_token', jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"role\": \"student\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "register"]
+						},
+						"description": "Register a new user. Automatically saves the access token to collection variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('auth_token', jsonData.access_token);",
+									"    console.log('Token saved:', jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@clubhouse.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login"]
+						},
+						"description": "Login with email and password. Automatically saves the access token to collection variable. Test users: admin@clubhouse.com, student@clubhouse.com, president@clubhouse.com (password: password123)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user"]
+						},
+						"description": "Get authenticated user information. Requires authentication token."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout"]
+						},
+						"description": "Logout and revoke the current access token. Requires authentication token."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints. Login first to get a token, then use it in Authorization header for protected routes."
+		},
+		{
+			"name": "Clubs",
+			"item": [
+				{
+					"name": "Get All Clubs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/clubs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs"]
+						},
+						"description": "Retrieve all clubs with student and event counts. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Club by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/clubs/{{club_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs", "{{club_id}}"]
+						},
+						"description": "Get a specific club with its students and events. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Club",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Chess Club\",\n    \"room\": \"A101\",\n    \"founded_year\": 2020,\n    \"president_email\": \"president@chessclub.edu\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clubs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs"]
+						},
+						"description": "Create a new club. Returns 201 on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Club",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Chess Club Updated\",\n    \"room\": \"A102\",\n    \"founded_year\": 2020,\n    \"president_email\": \"newpresident@chessclub.edu\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clubs/{{club_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs", "{{club_id}}"]
+						},
+						"description": "Update an existing club. All fields are optional (use 'sometimes' validation). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Club",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room\": \"A103\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clubs/{{club_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs", "{{club_id}}"]
+						},
+						"description": "Partially update a club (only send fields you want to update). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Club",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/clubs/{{club_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs", "{{club_id}}"]
+						},
+						"description": "Delete a club. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				}
+			],
+			"description": "Club management endpoints - All require authentication"
+		},
+		{
+			"name": "Students",
+			"item": [
+				{
+					"name": "Get All Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/students",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students"]
+						},
+						"description": "Retrieve all students (paginated, 10 per page). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/students/{{student_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students", "{{student_id}}"]
+						},
+						"description": "Get a specific student with their club memberships. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"gender\": \"M\",\n    \"date_of_birth\": \"2005-06-15\",\n    \"graduation_year\": 2025,\n    \"gpa\": 3.75\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/students",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students"]
+						},
+						"description": "Create a new student. Date of birth must be at least 15 years ago. Returns 201 on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Student",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"email\": \"jane.smith@example.com\",\n    \"gender\": \"F\",\n    \"date_of_birth\": \"2004-08-20\",\n    \"graduation_year\": 2024,\n    \"gpa\": 3.90\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/students/{{student_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students", "{{student_id}}"]
+						},
+						"description": "Update an existing student. All fields are optional. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Student",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gpa\": 3.95\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/students/{{student_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students", "{{student_id}}"]
+						},
+						"description": "Partially update a student (only send fields you want to update). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Student",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/students/{{student_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students", "{{student_id}}"]
+						},
+						"description": "Delete a student. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				}
+			],
+			"description": "Student management endpoints - All require authentication"
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Get All Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events"]
+						},
+						"description": "Retrieve all events ordered by start_time (paginated, 10 per page). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events", "{{event_id}}"]
+						},
+						"description": "Get a specific event with club information. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"club_id\": 1,\n    \"title\": \"Chess Tournament\",\n    \"description\": \"Annual inter-club chess tournament\",\n    \"start_time\": \"2025-12-15 14:00:00\",\n    \"end_time\": \"2025-12-15 18:00:00\",\n    \"venue\": \"Main Hall\",\n    \"expected_audience\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events"]
+						},
+						"description": "Create a new event. start_time must be in the future. Returns 201 on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"club_id\": 1,\n    \"title\": \"Chess Tournament - Updated\",\n    \"description\": \"Annual inter-club chess tournament with prizes\",\n    \"start_time\": \"2025-12-20 14:00:00\",\n    \"end_time\": \"2025-12-20 18:00:00\",\n    \"venue\": \"Main Hall - Updated\",\n    \"expected_audience\": 150\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events", "{{event_id}}"]
+						},
+						"description": "Update an existing event. All fields are optional. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Event",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"venue\": \"New Venue\",\n    \"expected_audience\": 200\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events", "{{event_id}}"]
+						},
+						"description": "Partially update an event (only send fields you want to update). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events", "{{event_id}}"]
+						},
+						"description": "Delete an event. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				}
+			],
+			"description": "Event management endpoints - All require authentication"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "club_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "student_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
