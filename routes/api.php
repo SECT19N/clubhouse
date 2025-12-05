@@ -32,4 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('clubs', ClubController::class);
     Route::apiResource('students', StudentController::class);
     Route::apiResource('events', EventController::class);
+
+    // Restore routes for soft-deleted resources
+    Route::post('clubs/{id}/restore', [ClubController::class, 'restore']);
+    Route::post('students/{id}/restore', [StudentController::class, 'restore']);
+    Route::post('events/{id}/restore', [EventController::class, 'restore']);
 });

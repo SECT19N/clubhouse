@@ -11,11 +11,52 @@ class ClubController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse {
-        return response()->json(Club::withCount([
+    public function index(Request $request): JsonResponse {
+        $query = Club::withCount([
             'students',
             'events'
-        ])->get());
+        ]);
+
+        // Search by name
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Filter by founded year
+        if ($request->has('founded_year')) {
+            $query->where('founded_year', $request->get('founded_year'));
+        }
+
+        // Filter by room
+        if ($request->has('room')) {
+            $query->where('room', 'like', "%{$request->get('room')}%");
+        }
+
+        // Include trashed items
+        if ($request->has('with_trashed') && $request->boolean('with_trashed')) {
+            $query->withTrashed();
+        }
+
+        // Only trashed items
+        if ($request->has('only_trashed') && $request->boolean('only_trashed')) {
+            $query->onlyTrashed();
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort_by', 'name'); // default sort by name
+        $sortOrder = $request->get('sort_order', 'asc'); // default ascending
+        
+        $allowedSortFields = ['name', 'founded_year', 'room', 'created_at'];
+        if (in_array($sortBy, $allowedSortFields)) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $clubs = $query->paginate($perPage);
+
+        return response()->json($clubs);
     }
 
     /**
@@ -82,6 +123,26 @@ class ClubController extends Controller {
     public function destroy(Club $club): JsonResponse {
         $club->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Restore a soft-deleted club.
+     */
+    public function restore($id): JsonResponse {
+        $club = Club::withTrashed()->findOrFail($id);
+        
+        if (!$club->trashed()) {
+            return response()->json([
+                'message' => 'Club is not deleted.',
+            ], 400);
+        }
+
+        $club->restore();
+        
+        return response()->json([
+            'message' => 'Club restored successfully',
+            'club' => $club,
+        ]);
     }
 
     /**

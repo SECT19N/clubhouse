@@ -162,11 +162,61 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/clubs",
+							"raw": "{{base_url}}/api/clubs?search=chess&founded_year=2020&sort_by=name&sort_order=asc&per_page=15",
 							"host": ["{{base_url}}"],
-							"path": ["api", "clubs"]
+							"path": ["api", "clubs"],
+							"query": [
+								{
+									"key": "search",
+									"value": "chess",
+									"description": "Search by club name",
+									"disabled": true
+								},
+								{
+									"key": "founded_year",
+									"value": "2020",
+									"description": "Filter by founded year",
+									"disabled": true
+								},
+								{
+									"key": "room",
+									"value": "",
+									"description": "Filter by room",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "name",
+									"description": "Sort field (name, founded_year, room, created_at)",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "asc",
+									"description": "Sort order (asc, desc)",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Items per page",
+									"disabled": true
+								},
+								{
+									"key": "with_trashed",
+									"value": "false",
+									"description": "Include soft-deleted items",
+									"disabled": true
+								},
+								{
+									"key": "only_trashed",
+									"value": "false",
+									"description": "Show only soft-deleted items",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Retrieve all clubs with student and event counts. Requires authentication."
+						"description": "Retrieve all clubs with student and event counts. Supports search, filtering, and sorting. Query params: search, founded_year, room, sort_by, sort_order, per_page, with_trashed, only_trashed. Requires authentication."
 					},
 					"response": []
 				},
@@ -310,7 +360,31 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "clubs", "{{club_id}}"]
 						},
-						"description": "Delete a club. Returns 204 No Content on success. Requires authentication."
+						"description": "Soft delete a club. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Club",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/clubs/{{club_id}}/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clubs", "{{club_id}}", "restore"]
+						},
+						"description": "Restore a soft-deleted club. Returns 200 on success. Requires authentication."
 					},
 					"response": []
 				},
@@ -448,11 +522,73 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/students",
+							"raw": "{{base_url}}/api/students?search=john&graduation_year=2025&gpa_min=3.5&sort_by=gpa&sort_order=desc&per_page=10",
 							"host": ["{{base_url}}"],
-							"path": ["api", "students"]
+							"path": ["api", "students"],
+							"query": [
+								{
+									"key": "search",
+									"value": "john",
+									"description": "Search by first name, last name, or email",
+									"disabled": true
+								},
+								{
+									"key": "graduation_year",
+									"value": "2025",
+									"description": "Filter by graduation year",
+									"disabled": true
+								},
+								{
+									"key": "gender",
+									"value": "",
+									"description": "Filter by gender (M, F)",
+									"disabled": true
+								},
+								{
+									"key": "gpa_min",
+									"value": "3.5",
+									"description": "Minimum GPA",
+									"disabled": true
+								},
+								{
+									"key": "gpa_max",
+									"value": "",
+									"description": "Maximum GPA",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "gpa",
+									"description": "Sort field (first_name, last_name, email, graduation_year, gpa, created_at)",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "desc",
+									"description": "Sort order (asc, desc)",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page",
+									"disabled": true
+								},
+								{
+									"key": "with_trashed",
+									"value": "false",
+									"description": "Include soft-deleted items",
+									"disabled": true
+								},
+								{
+									"key": "only_trashed",
+									"value": "false",
+									"description": "Show only soft-deleted items",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Retrieve all students (paginated, 10 per page). Requires authentication."
+						"description": "Retrieve all students with search, filtering, and sorting. Query params: search, graduation_year, gender, gpa_min, gpa_max, sort_by, sort_order, per_page, with_trashed, only_trashed. Requires authentication."
 					},
 					"response": []
 				},
@@ -596,7 +732,31 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "students", "{{student_id}}"]
 						},
-						"description": "Delete a student. Returns 204 No Content on success. Requires authentication."
+						"description": "Soft delete a student. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/students/{{student_id}}/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "students", "{{student_id}}", "restore"]
+						},
+						"description": "Restore a soft-deleted student. Returns 200 on success. Requires authentication."
 					},
 					"response": []
 				},
@@ -646,11 +806,85 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/events",
+							"raw": "{{base_url}}/api/events?club_id=1&start_date=2025-01-01&upcoming=true&sort_by=start_time&sort_order=asc&per_page=10",
 							"host": ["{{base_url}}"],
-							"path": ["api", "events"]
+							"path": ["api", "events"],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by title, description, or venue",
+									"disabled": true
+								},
+								{
+									"key": "club_id",
+									"value": "1",
+									"description": "Filter by club ID",
+									"disabled": true
+								},
+								{
+									"key": "start_date",
+									"value": "2025-01-01",
+									"description": "Filter events from this date (YYYY-MM-DD)",
+									"disabled": true
+								},
+								{
+									"key": "end_date",
+									"value": "",
+									"description": "Filter events until this date (YYYY-MM-DD)",
+									"disabled": true
+								},
+								{
+									"key": "venue",
+									"value": "",
+									"description": "Filter by venue",
+									"disabled": true
+								},
+								{
+									"key": "upcoming",
+									"value": "true",
+									"description": "Show only upcoming events",
+									"disabled": true
+								},
+								{
+									"key": "past",
+									"value": "false",
+									"description": "Show only past events",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "start_time",
+									"description": "Sort field (title, start_time, end_time, venue, expected_audience, created_at)",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "asc",
+									"description": "Sort order (asc, desc)",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page",
+									"disabled": true
+								},
+								{
+									"key": "with_trashed",
+									"value": "false",
+									"description": "Include soft-deleted items",
+									"disabled": true
+								},
+								{
+									"key": "only_trashed",
+									"value": "false",
+									"description": "Show only soft-deleted items",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Retrieve all events ordered by start_time (paginated, 10 per page). Requires authentication."
+						"description": "Retrieve all events with search, filtering, and sorting. Query params: search, club_id, start_date, end_date, venue, upcoming, past, sort_by, sort_order, per_page, with_trashed, only_trashed. Requires authentication."
 					},
 					"response": []
 				},
@@ -794,7 +1028,31 @@
 							"host": ["{{base_url}}"],
 							"path": ["api", "events", "{{event_id}}"]
 						},
-						"description": "Delete an event. Returns 204 No Content on success. Requires authentication."
+						"description": "Soft delete an event. Returns 204 No Content on success. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/{{event_id}}/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "events", "{{event_id}}", "restore"]
+						},
+						"description": "Restore a soft-deleted event. Returns 200 on success. Requires authentication."
 					},
 					"response": []
 				}

@@ -11,8 +11,61 @@ class StudentController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse {
-        return response()->json(Student::paginate(10));
+    public function index(Request $request): JsonResponse {
+        $query = Student::query();
+
+        // Search by name or email
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by graduation year
+        if ($request->has('graduation_year')) {
+            $query->where('graduation_year', $request->get('graduation_year'));
+        }
+
+        // Filter by gender
+        if ($request->has('gender')) {
+            $query->where('gender', $request->get('gender'));
+        }
+
+        // Filter by GPA range
+        if ($request->has('gpa_min')) {
+            $query->where('gpa', '>=', $request->get('gpa_min'));
+        }
+        if ($request->has('gpa_max')) {
+            $query->where('gpa', '<=', $request->get('gpa_max'));
+        }
+
+        // Include trashed items
+        if ($request->has('with_trashed') && $request->boolean('with_trashed')) {
+            $query->withTrashed();
+        }
+
+        // Only trashed items
+        if ($request->has('only_trashed') && $request->boolean('only_trashed')) {
+            $query->onlyTrashed();
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort_by', 'last_name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        $allowedSortFields = ['first_name', 'last_name', 'email', 'graduation_year', 'gpa', 'created_at'];
+        if (in_array($sortBy, $allowedSortFields)) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 10);
+        $students = $query->paginate($perPage);
+
+        return response()->json($students);
     }
 
     /**
@@ -81,6 +134,26 @@ class StudentController extends Controller {
     public function destroy(Student $student): JsonResponse {
         $student->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Restore a soft-deleted student.
+     */
+    public function restore($id): JsonResponse {
+        $student = Student::withTrashed()->findOrFail($id);
+        
+        if (!$student->trashed()) {
+            return response()->json([
+                'message' => 'Student is not deleted.',
+            ], 400);
+        }
+
+        $student->restore();
+        
+        return response()->json([
+            'message' => 'Student restored successfully',
+            'student' => $student,
+        ]);
     }
 
     /**
