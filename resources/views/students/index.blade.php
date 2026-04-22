@@ -71,9 +71,9 @@
                 <td>
                     <div style="display:flex;gap:10px;align-items:center">
                         <a href="{{ route('students.edit', $student) }}" style="font-size:0.75rem;color:#6b6b6b;text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='#6b6b6b'">Edit</a>
-                        <form method="POST" action="{{ route('students.destroy', $student) }}" onsubmit="return confirm('Delete this student?')">
+                        <form method="POST" action="{{ route('students.destroy', $student) }}" style="display:inline" onsubmit="return confirm('Delete {{ $student->first_name }} {{ $student->last_name }}?')">
                             @csrf @method('DELETE')
-                            <button type="submit" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:#f87171;padding:0">Delete</button>
+                            <button type="submit" class="btn-danger" style="padding:6px 12px;font-size:0.75rem">Delete</button>
                         </form>
                     </div>
                 </td>
