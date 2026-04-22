@@ -8,6 +8,7 @@
             <svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             New Student
         </a>
+        <a href="{{ route('students.export') }}" class="btn-ghost">Export CSV</a>
     @endif
 @endsection
 
@@ -22,16 +23,27 @@
 </form>
 
 <div class="card">
+    @php
+    function sortLink($label, $column, $currentSort, $currentDirection) {
+        $direction = ($currentSort === $column && $currentDirection === 'asc') ? 'desc' : 'asc';
+        $arrow = '';
+        if ($currentSort === $column) {
+            $arrow = $currentDirection === 'asc' ? ' ↑' : ' ↓';
+        }
+        return '<a href="' . request()->fullUrlWithQuery(['sort' => $column, 'direction' => $direction]) . '" style="color:white;text-decoration:none">' . $label . $arrow . '</a>';
+    }
+    @endphp
+
     <table>
         <thead class="align-middle h-16">
             <tr>
-                <th>Name</th>
+                <th>Student</th>
                 <th>Email</th>
                 <th>Gender</th>
-                <th>Grad Year</th>
-                <th>GPA</th>
+                <th>{!! sortLink('Grad Year', 'graduation_year', $sort, $direction) !!}</th>
+                <th>{!! sortLink('GPA', 'gpa', $sort, $direction) !!}</th>
                 <th>Clubs</th>
-                @if(Auth::user()->isAdmin()) <th></th> @endif
+                <th></th>
             </tr>
         </thead>
         <tbody>

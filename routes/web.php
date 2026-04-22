@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('clubs/{club}/students/{student}/role', [WebClubController::class, 'updateStudentRole'])->name('clubs.students.role');
 
     // Students
+    Route::get('students/export', [WebStudentController::class, 'export'])->name('students.export');
     Route::resource('students', WebStudentController::class);
 
     // Events
