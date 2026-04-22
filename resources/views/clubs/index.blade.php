@@ -24,7 +24,7 @@
 
 <div class="card">
     <table>
-        <thead>
+        <thead class="align-middle h-16">
             <tr>
                 <th>Name</th>
                 <th>Room</th>

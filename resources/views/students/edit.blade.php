@@ -1,81 +1,65 @@
 @extends('layouts.app')
-@section('title', $student->first_name . ' ' . $student->last_name)
-@section('heading', $student->first_name . ' ' . $student->last_name)
+@section('title', 'Edit ' . $student->first_name . ' ' . $student->last_name)
+@section('heading', 'Edit Student')
 
 @section('header-actions')
-    @if(Auth::user()->isAdmin())
-        <a href="{{ route('students.edit', $student) }}" class="btn-ghost">Edit</a>
-    @endif
-    <a href="{{ route('students.index') }}" class="btn-ghost">← All Students</a>
+    <a href="{{ route('students.show', $student) }}" class="btn-ghost">Cancel</a>
 @endsection
 
 @section('content')
-<div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start">
-
-    {{-- Profile card --}}
+<div style="max-width:600px">
     <div class="card" style="padding:24px">
-        <div style="width:56px;height:56px;border-radius:50%;background:#1f1f1f;border:1px solid #333;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
-            <span style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:#e8ff47">
-                {{ strtoupper(substr($student->first_name, 0, 1)) }}
-            </span>
-        </div>
+        <form method="POST" action="{{ route('students.update', $student) }}">
+            @csrf
+            @method('PUT')
 
-        <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:white;margin-bottom:4px">
-            {{ $student->first_name }} {{ $student->last_name }}
-        </h2>
-        <p style="font-size:0.8rem;color:#6b6b6b;margin-bottom:20px">{{ $student->email }}</p>
-
-        <div style="display:flex;flex-direction:column;gap:12px">
-            @foreach([
-                ['label' => 'Gender',       'value' => $student->gender ?? '—'],
-                ['label' => 'Date of Birth', 'value' => $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('M d, Y') : '—'],
-                ['label' => 'Grad Year',    'value' => $student->graduation_year],
-                ['label' => 'GPA',          'value' => $student->gpa !== null ? number_format($student->gpa, 2) : '—'],
-            ] as $field)
-            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #1e1e1e">
-                <span style="font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b">{{ $field['label'] }}</span>
-                <span style="font-size:0.875rem;color:white;font-family:'DM Mono',monospace">{{ $field['value'] }}</span>
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">First Name</label>
+                <input type="text" name="first_name" value="{{ old('first_name', $student->first_name) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('first_name')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
             </div>
-            @endforeach
-        </div>
-    </div>
 
-    {{-- Clubs --}}
-    <div class="card" style="padding:0">
-        <div style="padding:16px 20px;border-bottom:1px solid #262626">
-            <p style="font-family:'Syne',sans-serif;font-weight:600;color:white">
-                Club Memberships
-                <span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#6b6b6b;font-weight:400;margin-left:8px">{{ $clubs->count() }}</span>
-            </p>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Club</th>
-                    <th>Role</th>
-                    <th>Room</th>
-                    <th>Joined</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($clubs as $club)
-                <tr>
-                    <td>
-                        <a href="{{ route('clubs.show', $club) }}" style="color:white;text-decoration:none;font-weight:500">{{ $club->name }}</a>
-                    </td>
-                    <td><span class="badge badge-{{ $club->pivot->role ?? 'member' }}">{{ $club->pivot->role ?? 'member' }}</span></td>
-                    <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#6b6b6b">{{ $club->room ?? '—' }}</td>
-                    <td style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#6b6b6b">{{ $club->pivot->joined_at ?? '—' }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" style="text-align:center;color:#6b6b6b;padding:32px">
-                        Not a member of any clubs yet.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">Last Name</label>
+                <input type="text" name="last_name" value="{{ old('last_name', $student->last_name) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('last_name')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
+            </div>
+
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">Email</label>
+                <input type="email" name="email" value="{{ old('email', $student->email) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('email')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
+            </div>
+
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">Gender</label>
+                <select name="gender" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                    <option value="">—</option>
+                    <option value="M" {{ old('gender', $student->gender) == 'M' ? 'selected' : '' }}>Male</option>
+                    <option value="F" {{ old('gender', $student->gender) == 'F' ? 'selected' : '' }}>Female</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">Date of Birth</label>
+                <input type="date" name="date_of_birth" value="{{ old('date_of_birth', $student->date_of_birth) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('date_of_birth')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
+            </div>
+
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">Graduation Year</label>
+                <input type="number" name="graduation_year" value="{{ old('graduation_year', $student->graduation_year) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('graduation_year')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
+            </div>
+
+            <div style="margin-bottom:24px">
+                <label style="display:block;font-family:'DM Mono',monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#6b6b6b;margin-bottom:6px">GPA</label>
+                <input type="number" step="0.01" name="gpa" value="{{ old('gpa', $student->gpa) }}" style="width:100%;background:#1f1f1f;border:1px solid #333;color:white;padding:10px 12px;border-radius:6px;font-size:0.875rem">
+                @error('gpa')<p style="color:#ff6b6b;font-size:0.75rem;margin-top:4px">{{ $message }}</p>@enderror
+            </div>
+
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </form>
     </div>
 </div>
 @endsection

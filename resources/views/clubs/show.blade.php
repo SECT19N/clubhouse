@@ -84,7 +84,7 @@
         <div style="padding:16px 20px;border-bottom:1px solid #262626;display:flex;align-items:center;justify-content:space-between">
             <p style="font-family:'Syne',sans-serif;font-weight:600;color:white">Upcoming Events</p>
             @if(Auth::user()->isAdmin() || Auth::user()->isClubPresident())
-                <a href="{{ route('events.create') }}?club_id={{ $club->id }}" class="btn-primary" style="font-size:0.75rem;padding:5px 12px">+ Event</a>
+                <a href="{{ route('events.create', ['club_id' => $club->id]) }}" class="btn-primary" style="font-size:0.75rem;padding:5px 12px">+ Event</a>
             @endif
         </div>
         <table>
@@ -102,7 +102,7 @@
             </tbody>
         </table>
         <div style="padding:12px 20px">
-            <a href="{{ route('events.index') }}?club_id={{ $club->id }}" style="font-size:0.8rem;color:#e8ff47;text-decoration:none">All events for this club →</a>
+            <a href="{{ route('events.index', ['club_id' => $club->id]) }}" style="font-size:0.8rem;color:#e8ff47;text-decoration:none">All events for this club →</a>
         </div>
     </div>
 </div>

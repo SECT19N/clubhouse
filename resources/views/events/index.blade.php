@@ -34,7 +34,7 @@
 
 <div class="card">
     <table>
-        <thead>
+        <thead class="align-middle h-16">
             <tr>
                 <th>Title</th>
                 <th>Club</th>

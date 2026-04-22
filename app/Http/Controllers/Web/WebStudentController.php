@@ -62,7 +62,9 @@ class WebStudentController extends Controller
 
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $clubs = $student->clubs()->withPivot('role', 'joined_at')->get();
+
+        return view('students.edit', compact('student', 'clubs'));
     }
 
     public function update(Request $request, Student $student)
